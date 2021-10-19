@@ -1,0 +1,49 @@
+# https://docs.docker.com/compose/compose-file/
+# docker-compose up -d --build
+# https://github.com/Paritosh-Anand/Docker-Httpd-Tomcat
+version: "3.8"
+
+services:
+  web1:
+    build: apache/.
+    container_name: web-1
+    volumes:
+      - "./apache/web-1/etc/apache2:/etc/apache2"
+      - "./apache/web-1/etc/libapache2-mod-jk:/etc/libapache2-mod-jk"
+      - "./apache/web-1/var/log/apache2:/var/log/apache2"
+    ports:
+      - 80:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.10
+
+  was1:
+    build: tomcat/.
+    container_name: was-1
+    volumes:
+      - "./tomcat/was-1/conf:/usr/local/tomcat/conf"
+      - "./tomcat/was-1/logs:/usr/local/tomcat/logs"
+      - "./tomcat/was-1/webapps:/usr/local/tomcat/webapps"
+      - "./tomcat/was-1/work:/usr/local/tomcat/work"
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.20
+
+  was2:
+    build: tomcat/.
+    container_name: was-2
+    volumes:
+      - "./tomcat/was-2/conf:/usr/local/tomcat/conf" 
+      - "./tomcat/was-2/logs:/usr/local/tomcat/logs"
+      - "./tomcat/was-2/webapps:/usr/local/tomcat/webapps"
+      - "./tomcat/was-2/work:/usr/local/tomcat/work"
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.21
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
